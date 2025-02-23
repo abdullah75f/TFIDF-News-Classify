@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-kaggle
 pandas
 scikit-learn
 joblib
+kaggle

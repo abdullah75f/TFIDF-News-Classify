@@ -1,0 +1,18 @@
+# Ignore model files
+ml_model/model.pkl
+ml_model/vectorizer.pkl
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore __pycache__ directories
+__pycache__/
+
+# Ignore environment variables file
+.env
+
+# Ignore dataset directory
+dataset/
+
+# Ignore virtual environment directory
+venv/

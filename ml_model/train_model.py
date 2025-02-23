@@ -18,9 +18,10 @@ if not os.path.exists(kaggle_dir):
 # Ensure the kaggle.json file exists in the .kaggle directory
 kaggle_json_path = os.path.join(kaggle_dir, "kaggle.json")
 if not os.path.exists(kaggle_json_path):
+    # Add your Kaggle API credentials here
     with open(kaggle_json_path, "w") as f:
         f.write('{"username":"abdullah75f","key":"c2ee65eeab3c12aed3f8100586f95782"}')
-    os.chmod(kaggle_json_path, 0o600)
+    os.chmod(kaggle_json_path, 0o600)  # Set proper permissions for the kaggle.json file
 
 # Authenticate with the Kaggle API
 kaggle.api.authenticate()

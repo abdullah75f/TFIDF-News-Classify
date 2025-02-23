@@ -1,7 +1,3 @@
-# Ignore model files
-ml_model/model.pkl
-ml_model/vectorizer.pkl
-
 # Ignore node_modules directory
 node_modules/
 

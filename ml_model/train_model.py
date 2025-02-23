@@ -74,4 +74,4 @@ print("Saving the model and vectorizer...")
 joblib.dump(model, 'model.pkl')
 joblib.dump(vectorizer, 'vectorizer.pkl')
 
-print("Training complete and files saved.")
+print("Training complete and files saved .")

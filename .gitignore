@@ -16,6 +16,6 @@ venv/
 venv/
 __pycache__/
 *.pyc
-*.pkl
+
 *.json
 .DS_Store

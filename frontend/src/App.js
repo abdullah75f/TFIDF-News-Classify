@@ -236,8 +236,7 @@ function App() {
       >
         {category ? (
           <div>
-            <h3 style={{ color: "#3f72af" }}>Prediction Result</h3>
-            <p>{category}</p>
+            <h3 style={{ color: "#3f72af" }}>Prediction Result: {category}</h3>
           </div>
         ) : (
           <p>

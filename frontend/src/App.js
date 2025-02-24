@@ -262,7 +262,7 @@ function App() {
         <button
           onClick={toggleExplanation}
           style={{
-            padding: "10px 15px",
+            padding: "10px 5px",
             backgroundColor: "#3f72af",
             color: "white",
             border: "none",

@@ -62,7 +62,6 @@ function App() {
         background: darkMode ? "#121212" : "#F0F4F8",
         color: darkMode ? "white" : "black",
         transition: "all 0.3s ease-in-out",
-        paddingBottom: "80px", // Ensure space for footer
       }}
     >
       {/* NAVBAR */}
@@ -184,6 +183,73 @@ function App() {
             {loading ? <FaSpinner className="fa-spin" /> : "Predict"}
           </button>
         </div>
+
+        {/* RIGHT SIDE - EXAMPLE HEADLINES AND PREDICTIONS */}
+        <div
+          style={{
+            backgroundColor: darkMode ? "#444" : "#fff",
+            padding: "10px",
+            borderRadius: "12px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+            width: "45%",
+            maxWidth: "500px",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <h2
+            style={{
+              color: "#3f72af",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+          >
+            Example Headlines
+          </h2>
+          <div>
+            {exampleHeadlines.map((example, index) => (
+              <div
+                key={index}
+                style={{
+                  backgroundColor: darkMode ? "#333" : "#f4f7fc",
+                  marginBottom: "15px",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  border: darkMode ? "1px solid #444" : "1px solid #ccc",
+                }}
+              >
+                <h4 style={{ color: "#3f72af", fontWeight: "600" }}>
+                  {example.headline}
+                </h4>
+                <p style={{ color: darkMode ? "#ccc" : "#333" }}>
+                  Predicted Category: <strong>{example.prediction}</strong>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* PREDICTION RESULT */}
+      <div
+        style={{
+          backgroundColor: darkMode ? "#333" : "#f9f9f9",
+          textAlign: "center",
+          fontSize: "18px",
+          fontWeight: "600",
+          marginBottom: "80px",
+        }}
+      >
+        {category ? (
+          <div>
+            <h3 style={{ color: "#3f72af" }}>Prediction Result: {category}</h3>
+          </div>
+        ) : (
+          <p>
+            {loading
+              ? "Classifying..."
+              : "Enter a headline to get predictions!"}
+          </p>
+        )}
       </div>
 
       {/* TF-IDF EXPLANATION SECTION */}
@@ -191,7 +257,6 @@ function App() {
         style={{
           textAlign: "center",
           marginTop: "20px",
-          marginBottom: "100px", // Added extra space to keep it above the footer
         }}
       >
         <button
@@ -215,13 +280,18 @@ function App() {
               backgroundColor: "#f9f9f9",
               padding: "20px",
               borderRadius: "8px",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
             <h3>How TF-IDF Works</h3>
             <p><strong>Term Frequency (TF):</strong> The number of times a word appears in a document divided by the total number of words in that document.</p>
-            <p><strong>Inverse Document Frequency (IDF):</strong> A measure of how important a word is in the entire dataset.</p>
-            <p><strong>TF-IDF:</strong> The product of TF and IDF. It gives the importance of a word in a document relative to the dataset.</p>
+            <p><strong>Inverse Document Frequency (IDF):</strong> A measure of how important a word is in the entire dataset. It's calculated as the inverse of the number of documents that contain the word.</p>
+            <p><strong>TF-IDF:</strong> The product of TF and IDF. It gives the importance of a word in a document relative to the entire dataset.</p>
+
+            <h4>Example Calculation:</h4>
+            <p><strong>Headline:</strong> "Stock market sees a sharp decline"</p>
+            <p><strong>TF-IDF values:</strong> [0.1, 0.2, 0.3, 0.5, 0.7]</p>
+            <p>These values represent the importance of each word in the headline relative to all the other headlines in the dataset. The higher the value, the more important the word is for classification.</p>
           </div>
         )}
       </div>

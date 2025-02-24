@@ -3,16 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 import joblib
 from pydantic import BaseModel
 
-# Load model and vectorizer
-model = joblib.load("../ml_model/model.pkl")
-vectorizer = joblib.load("../ml_model/vectorizer.pkl")
+# Load model and vectorizer once at startup
+model = joblib.load("model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
 
 app = FastAPI()
 
-# Allow all origins for development (adjust for production)
+# Allow only your frontend origin
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or specify allowed origins
+    allow_origins=["https://tfidf-news-classify.onrender.com"],  # Your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,3 +26,7 @@ def predict_category(news: NewsInput):
     text_vectorized = vectorizer.transform([news.text])
     prediction = model.predict(text_vectorized)[0]
     return {"category": prediction}
+
+@app.get("/")
+def root():
+    return {"message": "TFIDF News Classifier API is running"}

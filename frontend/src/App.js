@@ -5,10 +5,11 @@ import { FaSpinner } from "react-icons/fa"; // Spinner icon for loading state
 function App() {
   const [text, setText] = useState("");
   const [category, setCategory] = useState(null);
+  const [tfidfValues, setTfidfValues] = useState([]); // Store TF-IDF values
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [selectedHeadline, setSelectedHeadline] = useState("");
-  const [showExplanation, setShowExplanation] = useState(false); // State for showing TF-IDF explanation
+  const [showExplanation, setShowExplanation] = useState(false);
 
   const exampleHeadlines = [
     {
@@ -31,25 +32,22 @@ function App() {
     try {
       const response = await axios.post(
         "https://tfidf-news-classify-6.onrender.com/predict/",
-        {
-          text: text,
-        }
+        { text: text }
       );
+
       setCategory(response.data.category);
+      setTfidfValues(response.data.tfidf_values || []); // Get TF-IDF values
     } catch (error) {
       console.error("Error:", error);
       setCategory("Error: Unable to classify");
+      setTfidfValues([]);
     }
     setLoading(false);
   };
 
   const handleSelectChange = (e) => {
     setSelectedHeadline(e.target.value);
-    setText(e.target.value); // Update the text area when a headline is selected
-  };
-
-  const toggleExplanation = () => {
-    setShowExplanation(!showExplanation); // Toggle TF-IDF explanation visibility
+    setText(e.target.value);
   };
 
   return (
@@ -58,7 +56,7 @@ function App() {
         fontFamily: "'Poppins', sans-serif",
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh", // Ensure the full height is used
+        minHeight: "100vh",
         background: darkMode ? "#121212" : "#F0F4F8",
         color: darkMode ? "white" : "black",
         transition: "all 0.3s ease-in-out",
@@ -96,7 +94,7 @@ function App() {
       <div
         style={{
           display: "flex",
-          flex: 1, // Ensure the content takes up remaining space
+          flex: 1,
           justifyContent: "space-evenly",
           alignItems: "center",
           padding: "40px 10px",
@@ -115,13 +113,7 @@ function App() {
             transition: "all 0.3s ease",
           }}
         >
-          <h2
-            style={{
-              color: "#3f72af",
-              textAlign: "center",
-              marginBottom: "20px",
-            }}
-          >
+          <h2 style={{ color: "#3f72af", textAlign: "center" }}>
             Enter or Select News Headline
           </h2>
 
@@ -183,84 +175,21 @@ function App() {
             {loading ? <FaSpinner className="fa-spin" /> : "Predict"}
           </button>
         </div>
-
-        {/* RIGHT SIDE - EXAMPLE HEADLINES AND PREDICTIONS */}
-        <div
-          style={{
-            backgroundColor: darkMode ? "#444" : "#fff",
-            padding: "10px",
-            borderRadius: "12px",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-            width: "45%",
-            maxWidth: "500px",
-            transition: "all 0.3s ease",
-          }}
-        >
-          <h2
-            style={{
-              color: "#3f72af",
-              textAlign: "center",
-              marginBottom: "20px",
-            }}
-          >
-            Example Headlines
-          </h2>
-          <div>
-            {exampleHeadlines.map((example, index) => (
-              <div
-                key={index}
-                style={{
-                  backgroundColor: darkMode ? "#333" : "#f4f7fc",
-                  marginBottom: "15px",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: darkMode ? "1px solid #444" : "1px solid #ccc",
-                }}
-              >
-                <h4 style={{ color: "#3f72af", fontWeight: "600" }}>
-                  {example.headline}
-                </h4>
-                <p style={{ color: darkMode ? "#ccc" : "#333" }}>
-                  Predicted Category: <strong>{example.prediction}</strong>
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* PREDICTION RESULT */}
-      <div
-        style={{
-          backgroundColor: darkMode ? "#333" : "#f9f9f9",
-          textAlign: "center",
-          fontSize: "18px",
-          fontWeight: "600",
-          marginBottom: "80px",
-        }}
-      >
+      <div style={{ textAlign: "center", fontSize: "18px", fontWeight: "600" }}>
         {category ? (
-          <div>
-            <h3 style={{ color: "#3f72af" }}>Prediction Result: {category}</h3>
-          </div>
+          <h3 style={{ color: "#3f72af" }}>Prediction Result: {category}</h3>
         ) : (
-          <p>
-            {loading
-              ? "Classifying..."
-              : "Enter a headline to get predictions!"}
-          </p>
+          <p>{loading ? "Classifying..." : "Enter a headline to get predictions!"}</p>
         )}
       </div>
 
-      {/* TF-IDF EXPLANATION SECTION */}
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: "20px",
-        }}
-      >
+      {/* TF-IDF EXPLANATION BUTTON */}
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
         <button
-          onClick={toggleExplanation}
+          onClick={() => setShowExplanation(!showExplanation)}
           style={{
             padding: "10px 15px",
             backgroundColor: "#3f72af",
@@ -273,30 +202,32 @@ function App() {
         >
           {showExplanation ? "Hide TF-IDF Explanation" : "Show TF-IDF Explanation"}
         </button>
-        {showExplanation && (
-          <div
-            style={{
-              marginTop: "20px",
-              backgroundColor: "#f9f9f9",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <h3>How TF-IDF Works</h3>
-            <p><strong>Term Frequency (TF):</strong> The number of times a word appears in a document divided by the total number of words in that document.</p>
-            <p><strong>Inverse Document Frequency (IDF):</strong> A measure of how important a word is in the entire dataset. It's calculated as the inverse of the number of documents that contain the word.</p>
-            <p><strong>TF-IDF:</strong> The product of TF and IDF. It gives the importance of a word in a document relative to the entire dataset.</p>
-
-            <h4>Example Calculation:</h4>
-            <p><strong>Headline:</strong> "Stock market sees a sharp decline"</p>
-            <p><strong>TF-IDF values:</strong> [0.1, 0.2, 0.3, 0.5, 0.7]</p>
-            <p>These values represent the importance of each word in the headline relative to all the other headlines in the dataset. The higher the value, the more important the word is for classification.</p>
-          </div>
-        )}
       </div>
 
-      {/* FIXED FOOTER */}
+      {/* TF-IDF EXPLANATION SECTION */}
+      {showExplanation && category && tfidfValues.length > 0 && (
+        <div
+          style={{
+            marginTop: "20px",
+            backgroundColor: "#f9f9f9",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            textAlign: "center",
+          }}
+        >
+          <h3>TF-IDF Values for "{text}"</h3>
+          <ul style={{ textAlign: "left", display: "inline-block" }}>
+            {tfidfValues.map(([word, value], index) => (
+              <li key={index}>
+                <strong>{word}:</strong> {value.toFixed(4)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* FOOTER */}
       <div
         style={{
           position: "fixed",
@@ -306,11 +237,10 @@ function App() {
           color: "white",
           padding: "15px",
           textAlign: "center",
-          fontSize: "16px",
         }}
       >
-        © 2025 News Classifier | Made with ❤️ for News Prediction | Designed by
-        Abdullah F. Al-Shehabi
+         © 2025 News Classifier | Made with ❤️ for News Prediction | Designed by
+         Abdullah F. Al-Shehabi
       </div>
     </div>
   );

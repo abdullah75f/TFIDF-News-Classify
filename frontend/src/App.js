@@ -1,62 +1,269 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { FaSpinner } from "react-icons/fa"; // Spinner icon for loading state
 
 function App() {
   const [text, setText] = useState("");
   const [category, setCategory] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [selectedHeadline, setSelectedHeadline] = useState("");
+
+  const exampleHeadlines = [
+    {
+      headline: "Apple announces new iPhone with AI features",
+      prediction: "Tech",
+    },
+    {
+      headline: "Stock market hits record high amid economic growth",
+      prediction: "Business",
+    },
+    {
+      headline: "Champions League final: Exciting match ends in draw",
+      prediction: "Sports",
+    },
+  ];
 
   const handleSubmit = async () => {
+    if (!text.trim()) return;
+    setLoading(true);
     try {
-      // Send the input text to the FastAPI backend for prediction
-      const response = await axios.post("https://tfidf-news-classify-6.onrender.com/predict/", {
-        text: text,
-      });
-      setCategory(response.data.category); // Set the predicted category
+      const response = await axios.post(
+        "https://tfidf-news-classify-6.onrender.com/predict/",
+        {
+          text: text,
+        }
+      );
+      setCategory(response.data.category);
     } catch (error) {
       console.error("Error:", error);
+      setCategory("Error: Unable to classify");
     }
+    setLoading(false);
+  };
+
+  const handleSelectChange = (e) => {
+    setSelectedHeadline(e.target.value);
+    setText(e.target.value); // Update the text area when a headline is selected
   };
 
   return (
-    <div style={{ fontFamily: "'Roboto', sans-serif", textAlign: "center", marginTop: "50px", backgroundColor: "#f4f7fc", padding: "20px" }}>
-      <h1 style={{ color: "#3f72af", fontSize: "36px", fontWeight: "700" }}>News Classifier</h1>
-      <input
-        type="text"
-        placeholder="Enter news headline..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+    <div
+      style={{
+        fontFamily: "'Poppins', sans-serif",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh", // Ensure the full height is used
+        background: darkMode ? "#121212" : "#F0F4F8",
+        color: darkMode ? "white" : "black",
+        transition: "all 0.3s ease-in-out",
+      }}
+    >
+      {/* NAVBAR */}
+      <div
         style={{
-          padding: "12px",
-          width: "350px",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
-          fontSize: "16px",
-          marginBottom: "20px",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-        }}
-      />
-      <br />
-      <button
-        onClick={handleSubmit}
-        style={{
-          marginLeft: "10px",
-          padding: "12px 20px",
-          backgroundColor: "#3f72af",
-          color: "#fff",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          fontSize: "16px",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          backgroundColor: darkMode ? "#333" : "#3f72af",
+          padding: "15px 30px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: "24px",
         }}
       >
-        Predict
-      </button>
-      {category && (
-        <h2 style={{ color: "#3f72af", marginTop: "20px", fontSize: "24px" }}>
-          Predicted Category: {category}
-        </h2>
-      )}
+        <div>📰 News Classifier</div>
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          style={{
+            background: "none",
+            border: "1px solid white",
+            padding: "8px 12px",
+            color: "white",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+        </button>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div
+        style={{
+          display: "flex",
+          flex: 1, // Ensure the content takes up remaining space
+          justifyContent: "space-evenly",
+          alignItems: "center",
+          padding: "40px 10px",
+          flexWrap: "wrap",
+        }}
+      >
+        {/* LEFT SIDE - INPUT SECTION */}
+        <div
+          style={{
+            backgroundColor: darkMode ? "#444" : "#fff",
+            padding: "30px",
+            borderRadius: "12px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+            width: "45%",
+            maxWidth: "500px",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <h2
+            style={{
+              color: "#3f72af",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+          >
+            Enter or Select News Headline
+          </h2>
+
+          {/* Select Dropdown for Predefined Headlines */}
+          <select
+            value={selectedHeadline}
+            onChange={handleSelectChange}
+            style={{
+              width: "100%",
+              padding: "12px",
+              fontSize: "16px",
+              borderRadius: "8px",
+              border: darkMode ? "1px solid #444" : "1px solid #ccc",
+              backgroundColor: darkMode ? "#333" : "#f4f4f4",
+              color: darkMode ? "white" : "black",
+              marginBottom: "15px",
+            }}
+          >
+            <option value="">Select a sample headline...</option>
+            {exampleHeadlines.map((example, index) => (
+              <option key={index} value={example.headline}>
+                {example.headline}
+              </option>
+            ))}
+          </select>
+
+          {/* Or, Text Input for Custom Headline */}
+          <textarea
+            placeholder="Type your news headline here..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            style={{
+              width: "100%",
+              height: "150px",
+              padding: "12px",
+              fontSize: "16px",
+              borderRadius: "8px",
+              border: darkMode ? "1px solid #444" : "1px solid #ccc",
+              backgroundColor: darkMode ? "#333" : "#f4f4f4",
+              color: darkMode ? "white" : "black",
+              resize: "none",
+              boxSizing: "border-box",
+            }}
+          />
+          <button
+            onClick={handleSubmit}
+            style={{
+              padding: "12px 20px",
+              backgroundColor: "#3f72af",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              width: "100%",
+              marginTop: "20px",
+              fontWeight: "600",
+            }}
+          >
+            {loading ? <FaSpinner className="fa-spin" /> : "Predict"}
+          </button>
+        </div>
+
+        {/* RIGHT SIDE - EXAMPLE HEADLINES AND PREDICTIONS */}
+        <div
+          style={{
+            backgroundColor: darkMode ? "#444" : "#fff",
+            padding: "10px",
+            borderRadius: "12px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+            width: "45%",
+            maxWidth: "500px",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <h2
+            style={{
+              color: "#3f72af",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+          >
+            Example Headlines
+          </h2>
+          <div>
+            {exampleHeadlines.map((example, index) => (
+              <div
+                key={index}
+                style={{
+                  backgroundColor: darkMode ? "#333" : "#f4f7fc",
+                  marginBottom: "15px",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  border: darkMode ? "1px solid #444" : "1px solid #ccc",
+                }}
+              >
+                <h4 style={{ color: "#3f72af", fontWeight: "600" }}>
+                  {example.headline}
+                </h4>
+                <p style={{ color: darkMode ? "#ccc" : "#333" }}>
+                  Predicted Category: <strong>{example.prediction}</strong>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* PREDICTION RESULT */}
+      <div
+        style={{
+          backgroundColor: darkMode ? "#333" : "#f9f9f9",
+          textAlign: "center",
+          fontSize: "18px",
+          fontWeight: "600",
+          marginBottom: "80px",
+        }}
+      >
+        {category ? (
+          <div>
+            <h3 style={{ color: "#3f72af" }}>Prediction Result</h3>
+            <p>{category}</p>
+          </div>
+        ) : (
+          <p>
+            {loading
+              ? "Classifying..."
+              : "Enter a headline to get predictions!"}
+          </p>
+        )}
+      </div>
+
+      {/* FIXED FOOTER */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: "0",
+          width: "100%",
+          backgroundColor: darkMode ? "#222" : "#3f72af",
+          color: "white",
+          padding: "15px",
+          textAlign: "center",
+          fontSize: "16px",
+        }}
+      >
+        © 2025 News Classifier | Made with ❤️ for News Prediction | Designed by
+        Abdullah F. Al-Shehabi
+      </div>
     </div>
   );
 }

@@ -87,7 +87,7 @@ if not os.path.exists('model.pkl') or not os.path.exists('vectorizer.pkl'):
     try:
         # Download the dataset
         download_dataset()
-        
+
         # Train and save the model
         train_and_save_model()
     except Exception as e:
@@ -103,10 +103,10 @@ def predict(headline: str):
         # Load the model and vectorizer
         model = joblib.load('model.pkl')
         vectorizer = joblib.load('vectorizer.pkl')
-        
+
         # Vectorize the input headline
         headline_vectorized = vectorizer.transform([headline])
-        
+
         # Predict the category
         prediction = model.predict(headline_vectorized)
         return {"predicted_category": prediction[0]}
@@ -116,4 +116,3 @@ def predict(headline: str):
 # Root route
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to TFIDFNewsClassify!"}

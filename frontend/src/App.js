@@ -8,6 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [selectedHeadline, setSelectedHeadline] = useState("");
+  const [showExplanation, setShowExplanation] = useState(false); // State for showing TF-IDF explanation
 
   const exampleHeadlines = [
     {
@@ -45,6 +46,10 @@ function App() {
   const handleSelectChange = (e) => {
     setSelectedHeadline(e.target.value);
     setText(e.target.value); // Update the text area when a headline is selected
+  };
+
+  const toggleExplanation = () => {
+    setShowExplanation(!showExplanation); // Toggle TF-IDF explanation visibility
   };
 
   return (
@@ -244,6 +249,50 @@ function App() {
               ? "Classifying..."
               : "Enter a headline to get predictions!"}
           </p>
+        )}
+      </div>
+
+      {/* TF-IDF EXPLANATION SECTION */}
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "20px",
+        }}
+      >
+        <button
+          onClick={toggleExplanation}
+          style={{
+            padding: "10px 15px",
+            backgroundColor: "#3f72af",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "600",
+          }}
+        >
+          {showExplanation ? "Hide TF-IDF Explanation" : "Show TF-IDF Explanation"}
+        </button>
+        {showExplanation && (
+          <div
+            style={{
+              marginTop: "20px",
+              backgroundColor: "#f9f9f9",
+              padding: "20px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <h3>How TF-IDF Works</h3>
+            <p><strong>Term Frequency (TF):</strong> The number of times a word appears in a document divided by the total number of words in that document.</p>
+            <p><strong>Inverse Document Frequency (IDF):</strong> A measure of how important a word is in the entire dataset. It's calculated as the inverse of the number of documents that contain the word.</p>
+            <p><strong>TF-IDF:</strong> The product of TF and IDF. It gives the importance of a word in a document relative to the entire dataset.</p>
+
+            <h4>Example Calculation:</h4>
+            <p><strong>Headline:</strong> "Stock market sees a sharp decline"</p>
+            <p><strong>TF-IDF values:</strong> [0.1, 0.2, 0.3, 0.5, 0.7]</p>
+            <p>These values represent the importance of each word in the headline relative to all the other headlines in the dataset. The higher the value, the more important the word is for classification.</p>
+          </div>
         )}
       </div>
 

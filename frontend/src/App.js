@@ -276,9 +276,9 @@ function App() {
         {showExplanation && (
           <div
             style={{
-              marginTop: "20px",
+              marginTop: "5px",
               backgroundColor: "#f9f9f9",
-              padding: "20px",
+              padding: "5px",
               borderRadius: "8px",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}

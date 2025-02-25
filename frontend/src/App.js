@@ -8,6 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [selectedHeadline, setSelectedHeadline] = useState("");
+  const [accuracy, setAccuracy] = useState(null); // State for model accuracy
 
   const exampleHeadlines = [
     {
@@ -28,12 +29,15 @@ function App() {
     if (!text.trim()) return;
     setLoading(true);
     try {
-      const response = await axios.post(
-        "https://tfidf-news-classify-6.onrender.com/predict/",
-        {
-          text: text,
-        }
-      );
+      // const response = await axios.post(
+      //   "https://tfidf-news-classify-6.onrender.com/predict/",
+      //   {
+      //     text: text,
+      //   }
+      // );
+      const response = await axios.post("http://localhost:8000/predict/", {
+        text: text,
+      });
       setCategory(response.data.category);
     } catch (error) {
       console.error("Error:", error);
@@ -45,6 +49,18 @@ function App() {
   const handleSelectChange = (e) => {
     setSelectedHeadline(e.target.value);
     setText(e.target.value); // Update the text area when a headline is selected
+  };
+
+  const handleEvaluate = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/evaluate/"
+      );
+      setAccuracy(response.data.accuracy);
+    } catch (error) {
+      console.error("Error:", error);
+      setAccuracy("Error: Unable to fetch accuracy");
+    }
   };
 
   return (
@@ -177,6 +193,22 @@ function App() {
           >
             {loading ? <FaSpinner className="fa-spin" /> : "Predict"}
           </button>
+          <button
+            onClick={handleEvaluate}
+            style={{
+              padding: "12px 20px",
+              backgroundColor: "#3f72af",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              width: "100%",
+              marginTop: "20px",
+              fontWeight: "600",
+            }}
+          >
+            Evaluate Model
+          </button>
         </div>
 
         {/* RIGHT SIDE - EXAMPLE HEADLINES AND PREDICTIONS */}
@@ -244,6 +276,11 @@ function App() {
               ? "Classifying..."
               : "Enter a headline to get predictions!"}
           </p>
+        )}
+        {accuracy !== null && (
+          <div>
+            <h3 style={{ color: "#3f72af" }}>Model Accuracy: {accuracy}</h3>
+          </div>
         )}
       </div>
 

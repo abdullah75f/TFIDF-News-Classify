@@ -2,6 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
 from pydantic import BaseModel
+import pandas as pd
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
+
 
 # Load model and vectorizer
 model = joblib.load("../ml_model/model.pkl")
@@ -12,7 +17,8 @@ app = FastAPI()
 # Allow all origins for development (adjust for production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://tfidf-news-classify.onrender.com"],
+    # allow_origins=["https://tfidf-news-classify.onrender.com"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,3 +32,19 @@ def predict_category(news: NewsInput):
     text_vectorized = vectorizer.transform([news.text])
     prediction = model.predict(text_vectorized)[0]
     return {"category": prediction}
+
+
+@app.get("/evaluate/")
+def evaluate_model():
+    # Load the test data
+    df = pd.read_json("../ml_model/dataset/News_Category_Dataset_v3.json", lines=True)
+    X = df['headline']
+    y = df['category']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_test_tfidf = vectorizer.transform(X_test)
+
+    # Predict and calculate accuracy
+    y_pred = model.predict(X_test_tfidf)
+    accuracy = accuracy_score(y_test, y_pred)
+    return {"accuracy": accuracy}
+    

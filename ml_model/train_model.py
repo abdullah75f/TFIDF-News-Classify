@@ -116,3 +116,4 @@ def predict(headline: str):
 # Root route
 @app.get("/")
 def read_root():
+    return {"message": "Welcome to the News Classification API"}

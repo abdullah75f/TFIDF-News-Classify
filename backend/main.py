@@ -7,9 +7,12 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import os
 
+
+
+
 # Load model and vectorizer
-model = joblib.load("model.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
+model = joblib.load("../ml_model/model.pkl")
+vectorizer = joblib.load("../ml_model/vectorizer.pkl")
 
 app = FastAPI()
 
@@ -17,6 +20,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    # allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,11 +35,11 @@ def predict_category(news: NewsInput):
     prediction = model.predict(text_vectorized)[0]
     return {"category": prediction}
 
+
 @app.get("/evaluate/")
 def evaluate_model():
     # Get the absolute path of the dataset file
-    dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dataset/News_Category_Dataset_v3.json")
-   
+    dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
     # Load the test data
     df = pd.read_json(dataset_path, lines=True)
     X = df['headline']
@@ -47,3 +51,4 @@ def evaluate_model():
     y_pred = model.predict(X_test_tfidf)
     accuracy = accuracy_score(y_test, y_pred)
     return {"accuracy": accuracy}
+    

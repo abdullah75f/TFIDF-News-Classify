@@ -35,6 +35,9 @@ function App() {
           text: text,
         }
       );
+      // const response = await axios.post("http://localhost:8000/predict/", {
+      //   text: text,
+      // });
       setCategory(response.data.category);
     } catch (error) {
       console.error("Error:", error);
@@ -53,6 +56,10 @@ function App() {
       const response = await axios.get(
         "https://tfidf-news-classify-6.onrender.com/evaluate/"
       );
+
+      // const response = await axios.get(
+      //   "http://localhost:8000/evaluate/"
+      // );
       setAccuracy(response.data.accuracy);
     } catch (error) {
       console.error("Error:", error);

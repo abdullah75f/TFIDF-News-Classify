@@ -36,7 +36,7 @@ def predict_category(news: NewsInput):
     return {"category": prediction}
 
 
- Evaluation endpoint
+ #Evaluation endpoint
 @app.get("/evaluate/")
 def evaluate_model():
     try:

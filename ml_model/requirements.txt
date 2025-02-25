@@ -6,3 +6,4 @@ fastapi
 uvicorn
 kaggle
 python-dotenv
+nltk

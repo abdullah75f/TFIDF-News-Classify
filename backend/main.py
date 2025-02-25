@@ -51,4 +51,3 @@ def evaluate_model():
     y_pred = model.predict(X_test_tfidf)
     accuracy = accuracy_score(y_test, y_pred)
     return {"accuracy": accuracy}
-    

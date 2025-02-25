@@ -113,6 +113,71 @@ def predict(headline: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {e}")
 
+
+# Evaluation endpoint
+@app.get("/evaluate/")
+def evaluate_model():
+    try:
+        # Load the dataset
+        df = pd.read_json(dataset_file, lines=True)
+        X = df['headline']
+        y = df['category']
+
+        # Train-Test Split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Transform the test set using the trained vectorizer
+        X_test_tfidf = vectorizer.transform(X_test)
+
+        # Predict and calculate accuracy
+        y_pred = model.predict(X_test_tfidf)
+        accuracy = accuracy_score(y_test, y_pred)
+        
+        return {"model_accuracy": accuracy}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
+
+
+    try:
+        # Load the dataset
+        df = pd.read_json(dataset_file, lines=True)
+        X = df['headline']
+        y = df['category']
+
+        # Train-Test Split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Transform the test set using the trained vectorizer
+        X_test_tfidf = vectorizer.transform(X_test)
+
+        # Predict and calculate accuracy
+        y_pred = model.predict(X_test_tfidf)
+        accuracy = accuracy_score(y_test, y_pred)
+        
+        return {"model_accuracy": accuracy}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
+
+
+    try:
+        # Load dataset and split
+        X_train, X_test, y_train, y_test = load_and_prepare_data()
+
+        # Load model and vectorizer
+        model = joblib.load('model.pkl')
+        vectorizer = joblib.load('vectorizer.pkl')
+
+        # Transform test set
+        X_test_tfidf = vectorizer.transform(X_test)
+
+        # Predict and calculate accuracy
+        y_pred = model.predict(X_test_tfidf)
+        accuracy = accuracy_score(y_test, y_pred)
+
+        return {"model_accuracy": accuracy}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
+
 # Root route
 @app.get("/")
 def read_root():

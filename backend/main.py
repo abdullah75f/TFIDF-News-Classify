@@ -3,10 +3,12 @@ import json
 import kaggle
 import pandas as pd
 from fastapi import FastAPI
+from pydantic import BaseModel
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
+import joblib
 
 app = FastAPI()
 
@@ -36,7 +38,7 @@ def train_model():
     X = df["headline"]
     y = df["category"]
     
-    vectorizer = TfidfVectorizer(stop_words="english")
+    vectorizer = TfidfVectorizer(stop_words="english", max_features=5000)  # Reduce memory usage
     X_tfidf = vectorizer.fit_transform(X)
     
     X_train, X_test, y_train, y_test = train_test_split(X_tfidf, y, test_size=0.2, random_state=42)
@@ -47,11 +49,22 @@ def train_model():
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     report = classification_report(y_test, y_pred, output_dict=True)
-    
-    return model, vectorizer, accuracy, report
 
-# Train the model at startup
-model, vectorizer, accuracy, report = train_model()
+    # Save the model and vectorizer
+    joblib.dump(model, "model.pkl")
+    joblib.dump(vectorizer, "vectorizer.pkl")
+
+    return accuracy, report
+
+# Train and save the model at startup
+accuracy, report = train_model()
+
+# Load trained model and vectorizer
+model = joblib.load("model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
+
+class TextInput(BaseModel):
+    text: str
 
 @app.get("/")
 def home():
@@ -62,7 +75,7 @@ def evaluate():
     return {"accuracy": accuracy, "classification_report": report}
 
 @app.post("/predict/")
-def predict(text: str):
-    transformed_text = vectorizer.transform([text])
+def predict(input_data: TextInput):
+    transformed_text = vectorizer.transform([input_data.text])
     prediction = model.predict(transformed_text)[0]
     return {"prediction": prediction}

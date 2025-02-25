@@ -113,7 +113,6 @@ def predict(headline: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {e}")
 
-
 # Evaluation endpoint
 @app.get("/evaluate/")
 def evaluate_model():

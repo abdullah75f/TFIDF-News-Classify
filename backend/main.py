@@ -67,14 +67,20 @@ def evaluate_model():
                 return {"error": "Unable to download dataset from Kaggle"}
         
         # Load the test data
+        logger.info("Loading dataset...")
         df = pd.read_json(dataset_path, lines=True)
         logger.info("Dataset loaded successfully")
         
         X = df['headline']
         y = df['category']
+        logger.info(f"Data split: {len(X)} headlines, {len(y)} categories")
+        
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        logger.info(f"Data split into train and test sets: {len(X_train)} train, {len(X_test)} test")
+        
         X_test_tfidf = vectorizer.transform(X_test)
-
+        logger.info("Data transformed using vectorizer")
+        
         # Predict and calculate accuracy
         y_pred = model.predict(X_test_tfidf)
         accuracy = accuracy_score(y_test, y_pred)

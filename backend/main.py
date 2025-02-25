@@ -38,57 +38,77 @@ def predict_category(news: NewsInput):
     prediction = model.predict(text_vectorized)[0]
     return {"category": prediction}
 
-# Helper function to download dataset from Kaggle
-def download_dataset():
-    try:
-        logger.info("Dataset not found locally. Downloading from Kaggle...")
-        kaggle.api.dataset_download_files('rmisra/news-category-dataset', path='../ml_model/dataset', unzip=True)
-        logger.info("Dataset downloaded successfully")
-    except Exception as e:
-        logger.error(f"Error downloading dataset from Kaggle: {e}")
-        return False
-    return True
-
-# Helper function to calculate model accuracy
-def calculate_accuracy():
+@app.get("/evaluate/")
+def evaluate_model():
     try:
         # Define the dataset path
         dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
         logger.info(f"Dataset path: {dataset_path}")
         
-        # Check if the dataset exists, download if not
+        # Check if the dataset already exists
         if not os.path.exists(dataset_path):
-            if not download_dataset():
-                return None
+            try:
+                # Download the dataset from Kaggle
+                logger.info("Dataset not found, downloading from Kaggle...")
+                kaggle.api.dataset_download_files('rmisra/news-category-dataset', path='../ml_model/dataset', unzip=True)
+                logger.info("Dataset downloaded successfully")
+                
+                # Log the contents of the directory
+                dataset_dir = os.path.dirname(dataset_path)
+                logger.info(f"Contents of dataset directory: {os.listdir(dataset_dir)}")
+                
+                # Check if the dataset file exists after download
+                if not os.path.exists(dataset_path):
+                    logger.error(f"Dataset file not found after download: {dataset_path}")
+                    return {"error": "Dataset file not found after download"}
+                
+            except Exception as e:
+                logger.error(f"Error downloading dataset from Kaggle: {e}")
+                return {"error": "Unable to download dataset from Kaggle"}
 
-        # Load dataset
-        logger.info("Loading dataset for accuracy calculation...")
-        df = pd.read_json(dataset_path, lines=True)
+                
+        
+        # Load the test data
+        logger.info("Loading dataset...")
+        try:
+            df = pd.read_json(dataset_path, lines=True)
+            logger.info("Dataset loaded successfully")
+        except ValueError as e:
+            logger.error(f"Error loading dataset (line-delimited): {e}")
+            return {"error": "Unable to load dataset"}
+        except Exception as e:
+            logger.error(f"Error loading dataset: {e}")
+            return {"error": "Unable to load dataset"}
+        
         X = df['headline']
         y = df['category']
+        logger.info(f"Data split: {len(X)} headlines, {len(y)} categories")
         
-        # Split the data into train and test sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-        # Transform the text data using the vectorizer
-        X_test_tfidf = vectorizer.transform(X_test)
+        try:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            logger.info(f"Data split into train and test sets: {len(X_train)} train, {len(X_test)} test")
+        except Exception as e:
+            logger.error(f"Error splitting data: {e}")
+            return {"error": "Unable to split data"}
         
-        # Predict using the model
-        y_pred = model.predict(X_test_tfidf)
+        try:
+            X_test_tfidf = vectorizer.transform(X_test)
+            logger.info("Data transformed using vectorizer")
+        except Exception as e:
+            logger.error(f"Error transforming data: {e}")
+            return {"error": "Unable to transform data"}
         
-        # Calculate accuracy
-        accuracy = accuracy_score(y_test, y_pred)
-        logger.info(f"Model accuracy: {accuracy:.2f}")
+        # Predict and calculate accuracy
+        try:
+            y_pred = model.predict(X_test_tfidf)
+            accuracy = accuracy_score(y_test, y_pred)
+            logger.info(f"Model accuracy: {accuracy}")
+        except Exception as e:
+            logger.error(f"Error predicting or calculating accuracy: {e}")
+            return {"error": "Unable to predict or calculate accuracy"}
         
-        return accuracy
-    except Exception as e:
-        logger.error(f"Error calculating accuracy: {e}")
-        return None
-
-@app.get("/evaluate/")
-def evaluate_model():
-    accuracy = calculate_accuracy()
-    if accuracy is not None:
+        # Return the accuracy in the response
         return {"accuracy": accuracy}
-    else:
+    except Exception as e:
+        logger.error(f"Error occurred: {e}")
         return {"error": "Unable to fetch accuracy"}

@@ -26,7 +26,7 @@ if not os.path.exists(kaggle_json_path):
 # Authenticate with the Kaggle API
 kaggle.api.authenticate()
 
-# Define the dataset path
+# Define the path to the dataset folder
 dataset_folder = 'dataset/'
 dataset_file = os.path.join(dataset_folder, 'News_Category_Dataset_v3.json')
 
@@ -49,6 +49,9 @@ def train_and_save_model():
     # Load the dataset
     print("Loading dataset...")
     df = pd.read_json(dataset_file, lines=True)
+
+    # Show the first few rows of the dataset
+    print(df.head())
 
     # Prepare the dataset for training
     X = df['headline']
@@ -76,6 +79,10 @@ def train_and_save_model():
     joblib.dump(model, 'model.pkl')
     joblib.dump(vectorizer, 'vectorizer.pkl')
 
+    # NEW: Save accuracy to a file
+    with open("accuracy.txt", "w") as f:
+        f.write(str(accuracy))
+
     print("Training complete and files saved.")
 
 # Check if the model and vectorizer exist
@@ -92,32 +99,6 @@ if not os.path.exists('model.pkl') or not os.path.exists('vectorizer.pkl'):
         raise HTTPException(status_code=500, detail="Model training failed.")
 else:
     print("Model and vectorizer found. Skipping training.")
-
-# Function to calculate model accuracy
-def calculate_accuracy():
-    try:
-        # Load the dataset
-        df = pd.read_json(dataset_file, lines=True)
-        X = df['headline']
-        y = df['category']
-
-        # Train-Test Split
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-        # Load the saved vectorizer and model
-        vectorizer = joblib.load('vectorizer.pkl')
-        model = joblib.load('model.pkl')
-
-        # Transform test data
-        X_test_tfidf = vectorizer.transform(X_test)
-
-        # Predict and calculate accuracy
-        y_pred = model.predict(X_test_tfidf)
-        accuracy = accuracy_score(y_test, y_pred)
-        return accuracy
-    except Exception as e:
-        print(f"Error calculating accuracy: {e}")
-        return None
 
 # API route for predictions
 @app.post("/predict")
@@ -136,14 +117,15 @@ def predict(headline: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {e}")
 
-# API route for accuracy calculation
+# NEW: API to return saved accuracy
 @app.get("/accuracy")
 def get_model_accuracy():
-    accuracy = calculate_accuracy()
-    if accuracy is not None:
-        return {"model_accuracy": accuracy}
-    else:
-        raise HTTPException(status_code=500, detail="Error calculating model accuracy")
+    try:
+        with open("accuracy.txt", "r") as f:
+            accuracy = f.read()
+        return {"model_accuracy": float(accuracy)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching model accuracy")
 
 # Root route
 @app.get("/")

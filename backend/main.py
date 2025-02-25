@@ -108,7 +108,7 @@ def predict_category(news: NewsInput):
 #         return {"error": "Unable to fetch accuracy"}
 
 # API to return model accuracy
-@app.get("/evaluate")
+@app.get("/evaluate/")
 def evaluate_model():
     try:
         with open("metadata.json", "r") as f:

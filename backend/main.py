@@ -113,6 +113,7 @@ def evaluate_model():
     try:
         with open("metadata.json", "r") as f:
             metadata = json.load(f)
-        return {"accuracy": metadata["accuracy"]}
-    except Exception:
-        raise HTTPException(status_code=500, detail="Error fetching model accuracy")
+        return metadata  # Return the entire metadata object
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching model accuracy: {str(e)}")
+

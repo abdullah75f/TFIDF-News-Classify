@@ -47,9 +47,14 @@ def evaluate_model():
         
         # Check if the dataset already exists
         if not os.path.exists(dataset_path):
-            # Download the dataset from Kaggle
-            logger.info("Dataset not found, downloading from Kaggle...")
-            kaggle.api.dataset_download_files('rmisra/news-category-dataset', path='../ml_model/dataset', unzip=True)
+            try:
+                # Download the dataset from Kaggle
+                logger.info("Dataset not found, downloading from Kaggle...")
+                kaggle.api.dataset_download_files('rmisra/news-category-dataset', path='../ml_model/dataset', unzip=True)
+                logger.info("Dataset downloaded successfully")
+            except Exception as e:
+                logger.error(f"Error downloading dataset from Kaggle: {e}")
+                return {"error": "Unable to download dataset from Kaggle"}
         
         # Load the test data
         df = pd.read_json(dataset_path, lines=True)

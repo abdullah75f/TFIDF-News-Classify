@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import os
 import kaggle
+import json
 import logging
 
 # Configure logging
@@ -38,35 +39,22 @@ def predict_category(news: NewsInput):
     prediction = model.predict(text_vectorized)[0]
     return {"category": prediction}
 
+
 @app.get("/evaluate/")
 def evaluate_model():
     try:
+        # Define the accuracy file path
+        accuracy_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/accuracy.txt")
+        
+        # If the accuracy file exists, read and return the stored accuracy
+        if os.path.exists(accuracy_file):
+            with open(accuracy_file, "r") as file:
+                accuracy = file.read().strip()  # Read and remove extra spaces/newlines
+            return {"accuracy": float(accuracy)}  # Convert to float before returning
+        
         # Define the dataset path
         dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
         logger.info(f"Dataset path: {dataset_path}")
-        
-        # Check if the dataset already exists
-        if not os.path.exists(dataset_path):
-            try:
-                # Download the dataset from Kaggle
-                logger.info("Dataset not found, downloading from Kaggle...")
-                kaggle.api.dataset_download_files('rmisra/news-category-dataset', path='../ml_model/dataset', unzip=True)
-                logger.info("Dataset downloaded successfully")
-                
-                # Log the contents of the directory
-                dataset_dir = os.path.dirname(dataset_path)
-                logger.info(f"Contents of dataset directory: {os.listdir(dataset_dir)}")
-                
-                # Check if the dataset file exists after download
-                if not os.path.exists(dataset_path):
-                    logger.error(f"Dataset file not found after download: {dataset_path}")
-                    return {"error": "Dataset file not found after download"}
-                
-            except Exception as e:
-                logger.error(f"Error downloading dataset from Kaggle: {e}")
-                return {"error": "Unable to download dataset from Kaggle"}
-
-                
         
         # Load the test data
         logger.info("Loading dataset...")
@@ -82,18 +70,15 @@ def evaluate_model():
         
         X = df['headline']
         y = df['category']
-        logger.info(f"Data split: {len(X)} headlines, {len(y)} categories")
         
         try:
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-            logger.info(f"Data split into train and test sets: {len(X_train)} train, {len(X_test)} test")
         except Exception as e:
             logger.error(f"Error splitting data: {e}")
             return {"error": "Unable to split data"}
         
         try:
             X_test_tfidf = vectorizer.transform(X_test)
-            logger.info("Data transformed using vectorizer")
         except Exception as e:
             logger.error(f"Error transforming data: {e}")
             return {"error": "Unable to transform data"}
@@ -106,6 +91,15 @@ def evaluate_model():
         except Exception as e:
             logger.error(f"Error predicting or calculating accuracy: {e}")
             return {"error": "Unable to predict or calculate accuracy"}
+        
+        # Save accuracy to file
+        try:
+            with open(accuracy_file, "w") as file:
+                file.write(str(accuracy))
+            logger.info("Accuracy saved to file")
+        except Exception as e:
+            logger.error(f"Error saving accuracy to file: {e}")
+            return {"error": "Unable to save accuracy"}
         
         # Return the accuracy in the response
         return {"accuracy": accuracy}

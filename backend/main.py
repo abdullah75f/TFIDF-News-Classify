@@ -68,23 +68,39 @@ def evaluate_model():
         
         # Load the test data
         logger.info("Loading dataset...")
-        df = pd.read_json(dataset_path, lines=True)
-        logger.info("Dataset loaded successfully")
+        try:
+            df = pd.read_json(dataset_path, lines=True)
+            logger.info("Dataset loaded successfully")
+        except Exception as e:
+            logger.error(f"Error loading dataset: {e}")
+            return {"error": "Unable to load dataset"}
         
         X = df['headline']
         y = df['category']
         logger.info(f"Data split: {len(X)} headlines, {len(y)} categories")
         
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        logger.info(f"Data split into train and test sets: {len(X_train)} train, {len(X_test)} test")
+        try:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            logger.info(f"Data split into train and test sets: {len(X_train)} train, {len(X_test)} test")
+        except Exception as e:
+            logger.error(f"Error splitting data: {e}")
+            return {"error": "Unable to split data"}
         
-        X_test_tfidf = vectorizer.transform(X_test)
-        logger.info("Data transformed using vectorizer")
+        try:
+            X_test_tfidf = vectorizer.transform(X_test)
+            logger.info("Data transformed using vectorizer")
+        except Exception as e:
+            logger.error(f"Error transforming data: {e}")
+            return {"error": "Unable to transform data"}
         
         # Predict and calculate accuracy
-        y_pred = model.predict(X_test_tfidf)
-        accuracy = accuracy_score(y_test, y_pred)
-        logger.info(f"Model accuracy: {accuracy}")
+        try:
+            y_pred = model.predict(X_test_tfidf)
+            accuracy = accuracy_score(y_test, y_pred)
+            logger.info(f"Model accuracy: {accuracy}")
+        except Exception as e:
+            logger.error(f"Error predicting or calculating accuracy: {e}")
+            return {"error": "Unable to predict or calculate accuracy"}
         
         # Return the accuracy in the response
         return {"accuracy": accuracy}

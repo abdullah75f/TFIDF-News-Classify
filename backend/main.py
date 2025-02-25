@@ -39,9 +39,17 @@ def predict_category(news: NewsInput):
 @app.get("/evaluate/")
 def evaluate_model():
     try:
+        # Define the model and vectorizer file paths
+        model_path = 'model.pkl'
+        vectorizer_path = 'vectorizer.pkl'
+
+        # Check if the model and vectorizer files exist
+        if not os.path.exists(model_path) or not os.path.exists(vectorizer_path):
+            raise FileNotFoundError("Model or vectorizer file is missing.")
+
         # Load the model and vectorizer
-        model = joblib.load('model.pkl')
-        vectorizer = joblib.load('vectorizer.pkl')
+        model = joblib.load(model_path)
+        vectorizer = joblib.load(vectorizer_path)
 
         # Get the absolute path of the dataset file
         dataset_path = 'TFIDFNewsClassify/ml_model/dataset/News_Category_Dataset_v3.json'
@@ -64,7 +72,6 @@ def evaluate_model():
         return {"accuracy": accuracy}
     except Exception as e:
         return {"error": f"Evaluation failed: {e}"}
-
 
 # Root route
 @app.get("/")

@@ -38,8 +38,9 @@ def predict_category(news: NewsInput):
 @app.get("/evaluate/")
 def evaluate_model():
     try:
-        # Get the absolute path of the dataset file
-        dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
+        # Define the absolute path to the dataset
+        base_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the current script
+        dataset_path = os.path.join(base_dir, "..", "ml_model", "dataset", "News_Category_Dataset_v3.json")
 
         # Check if the dataset exists
         if not os.path.exists(dataset_path):

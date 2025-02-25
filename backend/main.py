@@ -40,7 +40,7 @@ def predict_category(news: NewsInput):
 def evaluate_model():
     try:
         # Get the absolute path of the dataset file
-        dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
+        dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../dataset/News_Category_Dataset_v3.json")
         
         # Load the test data
         df = pd.read_json(dataset_path, lines=True)

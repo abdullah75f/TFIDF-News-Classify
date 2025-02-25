@@ -14,7 +14,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-accuracy_file = "/Users/abdullah75farid/Desktop/Abdullah/iCog-Labs/TFIDFNewsClassify/ml_model/model_accuracy.txt"
+accuracy_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/model_accuracy.txt")
+logger.info(f"Checking accuracy file at: {accuracy_file}")
 # Load model and vectorizer
 model = joblib.load("../ml_model/model.pkl")
 vectorizer = joblib.load("../ml_model/vectorizer.pkl")

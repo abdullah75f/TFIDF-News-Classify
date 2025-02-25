@@ -14,7 +14,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-accuracy_file = "model_accuracy.txt"
+accuracy_file = "/Users/abdullah75farid/Desktop/Abdullah/iCog-Labs/TFIDFNewsClassify/ml_model/model_accuracy.txt"
 # Load model and vectorizer
 model = joblib.load("../ml_model/model.pkl")
 vectorizer = joblib.load("../ml_model/vectorizer.pkl")
@@ -108,16 +108,20 @@ def evaluate_model():
         logger.error(f"Error occurred: {e}")
         return {"error": "Unable to fetch accuracy"}
 
-app.get("/accuracy_txt/")
+@app.get("/accuracy_txt/")
 def get_stored_accuracy():
     """Returns the stored model accuracy from model_accuracy.txt"""
     try:
+        logger.info(f"Looking for file at: {os.path.abspath(accuracy_file)}")  # Log absolute path
         if os.path.exists(accuracy_file):
             with open(accuracy_file, "r") as file:
-                accuracy = file.read().strip()
-            return {"accuracy": float(accuracy)}  # Convert to float before returning
+                content = file.read().strip()
+                # Extract the numeric value from the string
+                accuracy = float(content.split(":")[-1].strip())
+            return {"accuracy": accuracy}
         else:
-            return {"error": "Model accuracy file not found"}
+            logger.error(f"Model accuracy file not found at {accuracy_file}")
+            return {"error": f"Model accuracy file not found at {accuracy_file}"}
     except Exception as e:
         logger.error(f"Error reading model accuracy file: {e}")
-        return {"error": "Unable to read model accuracy file"}
+        return {"error": f"Unable to read model accuracy file: {str(e)}"}

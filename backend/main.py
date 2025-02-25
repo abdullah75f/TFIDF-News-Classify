@@ -52,6 +52,16 @@ def evaluate_model():
                 logger.info("Dataset not found, downloading from Kaggle...")
                 kaggle.api.dataset_download_files('rmisra/news-category-dataset', path='../ml_model/dataset', unzip=True)
                 logger.info("Dataset downloaded successfully")
+                
+                # Log the contents of the directory
+                dataset_dir = os.path.dirname(dataset_path)
+                logger.info(f"Contents of dataset directory: {os.listdir(dataset_dir)}")
+                
+                # Check if the dataset file exists after download
+                if not os.path.exists(dataset_path):
+                    logger.error(f"Dataset file not found after download: {dataset_path}")
+                    return {"error": "Dataset file not found after download"}
+                
             except Exception as e:
                 logger.error(f"Error downloading dataset from Kaggle: {e}")
                 return {"error": "Unable to download dataset from Kaggle"}

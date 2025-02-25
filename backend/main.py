@@ -5,6 +5,8 @@ from pydantic import BaseModel
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+import os
+
 
 
 
@@ -38,6 +40,8 @@ def predict_category(news: NewsInput):
 def evaluate_model():
     # Load the test data
     df = pd.read_json("../ml_model/dataset/News_Category_Dataset_v3.json", lines=True)
+     # Get the absolute path of the dataset file
+    dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
     X = df['headline']
     y = df['category']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

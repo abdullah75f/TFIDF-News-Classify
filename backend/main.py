@@ -14,6 +14,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+accuracy_file = "model_accuracy.txt"
 # Load model and vectorizer
 model = joblib.load("../ml_model/model.pkl")
 vectorizer = joblib.load("../ml_model/vectorizer.pkl")
@@ -106,3 +107,17 @@ def evaluate_model():
     except Exception as e:
         logger.error(f"Error occurred: {e}")
         return {"error": "Unable to fetch accuracy"}
+
+app.get("/accuracy_txt/")
+def get_stored_accuracy():
+    """Returns the stored model accuracy from model_accuracy.txt"""
+    try:
+        if os.path.exists(accuracy_file):
+            with open(accuracy_file, "r") as file:
+                accuracy = file.read().strip()
+            return {"accuracy": float(accuracy)}  # Convert to float before returning
+        else:
+            return {"error": "Model accuracy file not found"}
+    except Exception as e:
+        logger.error(f"Error reading model accuracy file: {e}")
+        return {"error": "Unable to read model accuracy file"}

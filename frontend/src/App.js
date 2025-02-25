@@ -54,7 +54,7 @@ function App() {
   const handleEvaluate = async () => {
     try {
       const response = await axios.get(
-        "https://tfidf-news-classify-6.onrender.com/evaluate/"
+        "https://tfidf-news-classify-6.onrender.com/accuracy_txt/"
       );
 
       // const response = await axios.get(

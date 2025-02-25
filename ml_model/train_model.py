@@ -56,6 +56,7 @@ def clean_text(text):
     return text
 
 # Train and save model
+# Train and save model
 def train_and_save_model():
     print("Loading dataset...")
     df = pd.read_json(dataset_file, lines=True)
@@ -71,7 +72,7 @@ def train_and_save_model():
     X_train_tfidf = vectorizer.fit_transform(X_train)
     X_test_tfidf = vectorizer.transform(X_test)
 
-    # Train the model (Switchable: Naïve Bayes → SVM)
+    # Train the model
     model = LinearSVC()  # Change to MultinomialNB() if you want Naïve Bayes
     model.fit(X_train_tfidf, y_train)
 
@@ -88,7 +89,12 @@ def train_and_save_model():
     with open("metadata.json", "w") as f:
         json.dump(metadata, f)
 
+    # Save accuracy to a text file
+    with open("model_accuracy.txt", "w") as f:
+        f.write(f"Model Accuracy: {accuracy:.2f}")
+
     print("Training complete and files saved.")
+
 
 # Load model and vectorizer once to speed up API requests
 if not os.path.exists('model.pkl') or not os.path.exists('vectorizer.pkl'):

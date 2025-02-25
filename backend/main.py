@@ -65,12 +65,17 @@ def evaluate_model():
             except Exception as e:
                 logger.error(f"Error downloading dataset from Kaggle: {e}")
                 return {"error": "Unable to download dataset from Kaggle"}
+
+                
         
         # Load the test data
         logger.info("Loading dataset...")
         try:
             df = pd.read_json(dataset_path, lines=True)
             logger.info("Dataset loaded successfully")
+        except ValueError as e:
+            logger.error(f"Error loading dataset (line-delimited): {e}")
+            return {"error": "Unable to load dataset"}
         except Exception as e:
             logger.error(f"Error loading dataset: {e}")
             return {"error": "Unable to load dataset"}

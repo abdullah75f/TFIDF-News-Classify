@@ -6,6 +6,8 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import os
+import kaggle
+
 
 
 
@@ -25,6 +27,45 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Kaggle API setup
+def setup_kaggle():
+    # Ensure the .kaggle directory exists
+    kaggle_dir = os.path.expanduser("~/.kaggle")
+    if not os.path.exists(kaggle_dir):
+        os.makedirs(kaggle_dir)
+
+    # Ensure the kaggle.json file exists in the .kaggle directory
+    kaggle_json_path = os.path.join(kaggle_dir, "kaggle.json")
+    if not os.path.exists(kaggle_json_path):
+        # Add your Kaggle API credentials here
+        with open(kaggle_json_path, "w") as f:
+            f.write('{"username":"abdullah75f","key":"c2ee65eeab3c12aed3f8100586f95782"}')
+        os.chmod(kaggle_json_path, 0o600)  # Set proper permissions for the kaggle.json file
+
+    # Authenticate with the Kaggle API
+    kaggle.api.authenticate()
+
+# Function to download the dataset
+def download_dataset():
+    dataset_folder = "dataset"
+    dataset_file = os.path.join(dataset_folder, "News_Category_Dataset_v3.json")
+
+    if not os.path.exists(dataset_folder):
+        os.makedirs(dataset_folder)
+
+    # Use Kaggle API to download the dataset
+    print("Downloading dataset from Kaggle...")
+    kaggle.api.dataset_download_files("rmisra/news-category-dataset", path=dataset_folder, unzip=True)
+
+    # Check if the dataset was downloaded
+    if not os.path.exists(dataset_file):
+        raise FileNotFoundError(f"Dataset file not found at {dataset_file}")
+    print("Dataset downloaded successfully.")
+
+# Initialize Kaggle API
+setup_kaggle()
+
 
 class NewsInput(BaseModel):
     text: str

@@ -56,8 +56,11 @@ function App() {
       const response = await axios.get(
         "https://tfidf-news-classify-6.onrender.com/evaluate/"
       );
-      console.log("Evaluation Response:", response.data); // Log full response
-      setAccuracy(response.data.accuracy); // Set accuracy directly
+
+      // const response = await axios.get(
+      //   "http://localhost:8000/evaluate/"
+      // );
+      setAccuracy(response.data.accuracy);
     } catch (error) {
       console.error("Error:", error);
       setAccuracy("Error: Unable to fetch accuracy");

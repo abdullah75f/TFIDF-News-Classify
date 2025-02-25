@@ -40,80 +40,69 @@ def predict_category(news: NewsInput):
     return {"category": prediction}
 
 
-# @app.get("/evaluate/")
-# def evaluate_model():
-#     try:
-#         # Define the accuracy file path
-#         accuracy_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/accuracy.txt")
-        
-#         # If the accuracy file exists, read and return the stored accuracy
-#         if os.path.exists(accuracy_file):
-#             with open(accuracy_file, "r") as file:
-#                 accuracy = file.read().strip()  # Read and remove extra spaces/newlines
-#             return {"accuracy": float(accuracy)}  # Convert to float before returning
-        
-#         # Define the dataset path
-#         dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
-#         logger.info(f"Dataset path: {dataset_path}")
-        
-#         # Load the test data
-#         logger.info("Loading dataset...")
-#         try:
-#             df = pd.read_json(dataset_path, lines=True)
-#             logger.info("Dataset loaded successfully")
-#         except ValueError as e:
-#             logger.error(f"Error loading dataset (line-delimited): {e}")
-#             return {"error": "Unable to load dataset"}
-#         except Exception as e:
-#             logger.error(f"Error loading dataset: {e}")
-#             return {"error": "Unable to load dataset"}
-        
-#         X = df['headline']
-#         y = df['category']
-        
-#         try:
-#             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-#         except Exception as e:
-#             logger.error(f"Error splitting data: {e}")
-#             return {"error": "Unable to split data"}
-        
-#         try:
-#             X_test_tfidf = vectorizer.transform(X_test)
-#         except Exception as e:
-#             logger.error(f"Error transforming data: {e}")
-#             return {"error": "Unable to transform data"}
-        
-#         # Predict and calculate accuracy
-#         try:
-#             y_pred = model.predict(X_test_tfidf)
-#             accuracy = accuracy_score(y_test, y_pred)
-#             logger.info(f"Model accuracy: {accuracy}")
-#         except Exception as e:
-#             logger.error(f"Error predicting or calculating accuracy: {e}")
-#             return {"error": "Unable to predict or calculate accuracy"}
-        
-#         # Save accuracy to file
-#         try:
-#             with open(accuracy_file, "w") as file:
-#                 file.write(str(accuracy))
-#             logger.info("Accuracy saved to file")
-#         except Exception as e:
-#             logger.error(f"Error saving accuracy to file: {e}")
-#             return {"error": "Unable to save accuracy"}
-        
-#         # Return the accuracy in the response
-#         return {"accuracy": accuracy}
-#     except Exception as e:
-#         logger.error(f"Error occurred: {e}")
-#         return {"error": "Unable to fetch accuracy"}
-
-# API to return model accuracy
 @app.get("/evaluate/")
 def evaluate_model():
     try:
-        with open("metadata.json", "r") as f:
-            metadata = json.load(f)
-        return metadata  # Return the entire metadata object
+        # Define the accuracy file path
+        accuracy_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/accuracy.txt")
+        
+        # If the accuracy file exists, read and return the stored accuracy
+        if os.path.exists(accuracy_file):
+            with open(accuracy_file, "r") as file:
+                accuracy = file.read().strip()  # Read and remove extra spaces/newlines
+            return {"accuracy": float(accuracy)}  # Convert to float before returning
+        
+        # Define the dataset path
+        dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../ml_model/dataset/News_Category_Dataset_v3.json")
+        logger.info(f"Dataset path: {dataset_path}")
+        
+        # Load the test data
+        logger.info("Loading dataset...")
+        try:
+            df = pd.read_json(dataset_path, lines=True)
+            logger.info("Dataset loaded successfully")
+        except ValueError as e:
+            logger.error(f"Error loading dataset (line-delimited): {e}")
+            return {"error": "Unable to load dataset"}
+        except Exception as e:
+            logger.error(f"Error loading dataset: {e}")
+            return {"error": "Unable to load dataset"}
+        
+        X = df['headline']
+        y = df['category']
+        
+        try:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        except Exception as e:
+            logger.error(f"Error splitting data: {e}")
+            return {"error": "Unable to split data"}
+        
+        try:
+            X_test_tfidf = vectorizer.transform(X_test)
+        except Exception as e:
+            logger.error(f"Error transforming data: {e}")
+            return {"error": "Unable to transform data"}
+        
+        # Predict and calculate accuracy
+        try:
+            y_pred = model.predict(X_test_tfidf)
+            accuracy = accuracy_score(y_test, y_pred)
+            logger.info(f"Model accuracy: {accuracy}")
+        except Exception as e:
+            logger.error(f"Error predicting or calculating accuracy: {e}")
+            return {"error": "Unable to predict or calculate accuracy"}
+        
+        # Save accuracy to file
+        try:
+            with open(accuracy_file, "w") as file:
+                file.write(str(accuracy))
+            logger.info("Accuracy saved to file")
+        except Exception as e:
+            logger.error(f"Error saving accuracy to file: {e}")
+            return {"error": "Unable to save accuracy"}
+        
+        # Return the accuracy in the response
+        return {"accuracy": accuracy}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching model accuracy: {str(e)}")
-
+        logger.error(f"Error occurred: {e}")
+        return {"error": "Unable to fetch accuracy"}

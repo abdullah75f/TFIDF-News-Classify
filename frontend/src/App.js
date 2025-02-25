@@ -29,15 +29,15 @@ function App() {
     if (!text.trim()) return;
     setLoading(true);
     try {
-      // const response = await axios.post(
-      //   "https://tfidf-news-classify-6.onrender.com/predict/",
-      //   {
-      //     text: text,
-      //   }
-      // );
-      const response = await axios.post("http://localhost:8000/predict/", {
-        text: text,
-      });
+      const response = await axios.post(
+        "https://tfidf-news-classify-6.onrender.com/predict/",
+        {
+          text: text,
+        }
+      );
+      // const response = await axios.post("http://localhost:8000/predict/", {
+      //   text: text,
+      // });
       setCategory(response.data.category);
     } catch (error) {
       console.error("Error:", error);
@@ -54,7 +54,7 @@ function App() {
   const handleEvaluate = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/evaluate/"
+        "https://tfidf-news-classify-6.onrender.com/evaluate/"
       );
       setAccuracy(response.data.accuracy);
     } catch (error) {

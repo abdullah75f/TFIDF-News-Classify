@@ -27,9 +27,10 @@ Send a **GET** request:
 GET https://tfidf-news-classify-6.onrender.com/accuracy
 ```
 ### **📦 Tech Stack**
-Machine Learning: Scikit-learn, TF-IDF, LinearSVC
-Backend: FastAPI
-Deployment: Render
+**Machine Learning:** Scikit-learn, TF-IDF, LinearSVC
+**Backend:** FastAPI
+**Frontend:** Reactjs
+**Deployment**: Render
 🔗 Dataset
 News Category Dataset from Kaggle
 📬 Contact

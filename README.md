@@ -4,9 +4,9 @@ A **machine learning project** that classifies news headlines into categories li
 
   
 
-## 🚀 **Live API**  
+## 🚀 **Live API (Use the below API to access my project ) ** 
 🔹 **Frontend:** [TFIDFNewsClassify UI](https://tfidf-news-classify.onrender.com)  
-🔹 **Backend:** [TFIDFNewsClassify API](https://tfidf-news-classify-6.onrender.com)  
+ 
 
 ## 📌 **How to Use the API**  
 

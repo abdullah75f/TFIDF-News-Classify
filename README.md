@@ -26,7 +26,7 @@ Send a **GET** request:
 ```http
 GET https://tfidf-news-classify-6.onrender.com/accuracy
 ```
-### **📦 Tech Stack**
+## **📦 Tech Stack**
 **Machine Learning:** Scikit-learn, TF-IDF, LinearSVC
 **Backend:** FastAPI
 **Frontend:** Reactjs

@@ -34,6 +34,6 @@ GET https://tfidf-news-classify-6.onrender.com/accuracy
 **Frontend:** Reactjs  
 **Deployment**: Render  
 ## **🔗 Dataset**
-News Category Dataset from Kaggle
+🔹**News Category Dataset from Kaggle:** https://www.kaggle.com/datasets/rmisra/news-category-dataset
 ## **📬 Contact**
 Have questions or suggestions? Reach out at abdullah75farid@gmail.com 🚀

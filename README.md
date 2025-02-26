@@ -1,6 +1,8 @@
 # **TFIDFNewsClassify 🗞️🤖**  
 
-A **machine learning project** that classifies news headlines into categories like **Sports, Business, and Tech** using **TF-IDF** for feature extraction and **LinearSVC** for classification.  
+A **machine learning project** that classifies news headlines into categories like Sports, Business, and Tech using TF-IDF for feature extraction and LinearSVC for classification. The dataset is preprocessed by cleaning the text and removing stopwords. TF-IDF Vectorizer transforms the cleaned text into numerical features, and the LinearSVC model is trained to predict the category. The trained model is saved for future use, and the prediction is served through an API.
+
+  
 
 ## 🚀 **Live API**  
 🔹 **Frontend:** [TFIDFNewsClassify UI](https://tfidf-news-classify.onrender.com)  

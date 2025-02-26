@@ -17,7 +17,7 @@ function App() {
     },
     {
       headline: "Stock market hits record high amid economic growth",
-      prediction: "Business",
+      prediction: "POLITICS",
     },
     {
       headline: "Champions League final: Exciting match ends in draw",

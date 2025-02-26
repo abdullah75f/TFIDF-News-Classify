@@ -39,7 +39,14 @@ class NewsInput(BaseModel):
 def predict_category(news: NewsInput):
     text_vectorized = vectorizer.transform([news.text])
     prediction = model.predict(text_vectorized)[0]
-    return {"category": prediction}
+
+    tfidf_scores = text_vectorized.toarray()[0]
+    feature_names = vectorizer.get_feature_names_out()
+    top_tfidf_indices = tfidf_scores.argsort()[-10:][::-1]
+    top_tfidf_features = {feature_names[i]: tfidf_scores[i] for i in top_tfidf_indices}
+
+    print(f"TF-IDF Features for '{news.text}': {top_tfidf_features}")  # Debugging print
+    return {"category": prediction, "tfidf_values": top_tfidf_features}
 
 
 @app.get("/evaluate/")

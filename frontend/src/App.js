@@ -292,7 +292,7 @@ function App() {
       >
         {category ? (
           <div>
-            <h3 style={{ color: "#3f72af" }}>Prediction Result: {category}</h3>
+            <h3 style={{ color: "#3f72af" }}>Prediction Result: {category}, to look tf-idf values press 👇</h3>
           </div>
         ) : (
           <p>

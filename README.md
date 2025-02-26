@@ -31,7 +31,7 @@ GET https://tfidf-news-classify-6.onrender.com/accuracy
 **Backend:** FastAPI  
 **Frontend:** Reactjs  
 **Deployment**: Render  
-🔗 Dataset
+## **🔗 Dataset**
 News Category Dataset from Kaggle
-📬 Contact
+## **📬 Contact**
 Have questions or suggestions? Reach out at abdullah75farid@gmail.com 🚀

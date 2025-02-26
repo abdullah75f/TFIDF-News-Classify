@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { FaSpinner } from "react-icons/fa"; // Spinner icon for loading state
+import { FaSpinner, FaAngleDown, FaAngleUp } from "react-icons/fa"; // Arrow icons for toggling
 
 function App() {
   const [text, setText] = useState("");
@@ -8,7 +8,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [selectedHeadline, setSelectedHeadline] = useState("");
-  const [accuracy, setAccuracy] = useState(null); // State for model accuracy
+  const [accuracy, setAccuracy] = useState(null);
+  const [tfidfValues, setTfidfValues] = useState(null);
+  const [showTfidf, setShowTfidf] = useState(false); // Track TF-IDF visibility
+
 
   const exampleHeadlines = [
     {
@@ -25,20 +28,37 @@ function App() {
     },
   ];
 
+  // const handleSubmit = async () => {
+  //   if (!text.trim()) return;
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.post(
+  //       "https://tfidf-news-classify-6.onrender.com/predict/",
+  //       {
+  //         text: text,
+  //       }
+  //     );
+  //     // const response = await axios.post("http://localhost:8000/predict/", {
+  //     //   text: text,
+  //     // });
+  //     setCategory(response.data.category);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     setCategory("Error: Unable to classify");
+  //   }
+  //   setLoading(false);
+  // };
+
   const handleSubmit = async () => {
     if (!text.trim()) return;
     setLoading(true);
     try {
       const response = await axios.post(
         "https://tfidf-news-classify-6.onrender.com/predict/",
-        {
-          text: text,
-        }
+        { text }
       );
-      // const response = await axios.post("http://localhost:8000/predict/", {
-      //   text: text,
-      // });
       setCategory(response.data.category);
+      setTfidfValues(response.data.tfidf_values); // Store TF-IDF values
     } catch (error) {
       console.error("Error:", error);
       setCategory("Error: Unable to classify");
@@ -284,6 +304,52 @@ function App() {
         {accuracy !== null && (
           <div>
             <h3 style={{ color: "#3f72af" }}>Model Accuracy: {accuracy}</h3>
+          </div>
+        )}
+        {tfidfValues && (
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <button
+              onClick={() => setShowTfidf(!showTfidf)}
+              style={{
+                padding: "10px",
+                backgroundColor: "#3f72af",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                marginBottom: "10px",
+              }}
+            >
+              {showTfidf ? <FaAngleUp /> : <FaAngleDown />} Show TF-IDF Values
+            </button>
+            {showTfidf && (
+              <div>
+                <h3 style={{ color: "#3f72af" }}>TF-IDF Values:</h3>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    gap: "15px",
+                  }}
+                >
+                  {Object.entries(tfidfValues).map(([word, score]) => (
+                    <div
+                      key={word}
+                      style={{
+                        backgroundColor: darkMode ? "#333" : "#f4f7fc",
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        border: darkMode ? "1px solid #444" : "1px solid #ccc",
+                        display: "inline-block",
+                      }}
+                    >
+                      <strong>{word}:</strong> {score.toFixed(4)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
